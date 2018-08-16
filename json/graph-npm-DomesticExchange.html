@@ -23,7 +23,7 @@ var app = {};
 option = null;
 myChart.showLoading();
 
-$.getJSON('DomesticExchange.json', function (json) {
+$.getJSON('DomesticExchange-v2.json', function (json) {
     myChart.hideLoading();
     myChart.setOption(option = {
         title: {
@@ -58,7 +58,8 @@ $.getJSON('DomesticExchange.json', function (json) {
                 }),
                 label: {
                     emphasis: {
-                        position: 'right',
+			position: [0, -20],
+                        rotate: 45 ,
                         show: true
                     }
                 },
@@ -66,9 +67,9 @@ $.getJSON('DomesticExchange.json', function (json) {
                 focusNodeAdjacency: true,
                 lineStyle: {
                     normal: {
-                        width: 0.9,
-                        curveness: 0.2,
-                        opacity: 0.6
+                        width: 0.6,
+                        curveness: 0.6,
+                        opacity: 0.2
                     }
                 }
             }

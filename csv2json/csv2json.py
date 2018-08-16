@@ -5,8 +5,8 @@ import os
 import random
 import csv
 
-rangeX = (-800, 800)
-rangeY = (-800, 800)
+rangeX = -200
+rangeY = 200
 
 AS_IP = {}
 AS_Name = {'AS4652':'CAT-IX (Bangrak/ Nonthaburi)','AS45788':'BB Connect-IX (UIH/ BEENET)','AS45265':'CSL-IX','AS45642':'JasTel-IX','AS45458':'AWN-IX (SBN)','AS132880':'SYMC-IX','AS45667':'TCCT-IX',
@@ -54,12 +54,13 @@ json.write("{\"nodes\":[")
 number = 0
  
 for i in AS_IP:
-        json.write("{\"color\":\""+color[number]+"\""+",\"label\":\""+str(AS_Name[i])+"\""+",\"attributes\":{},\"y\":"+str(random.randrange(*rangeX))+",\"x\":"+str(random.randrange(*rangeY))+",\"id\":"+"\""+str(i)+"\""+",\"size\":"+str(AS_IP[i]/36)+"}")
+        json.write("{\"color\":\""+color[number]+"\""+",\"label\":\""+str(AS_Name[i])+"\""+",\"attributes\":{},\"y\":"+str(rangeY)+",\"x\":"+str(rangeX)+",\"id\":"+"\""+str(i)+"\""+",\"size\":"+str(AS_IP[i]/36)+"}")
 	if len(AS_IP)-1 == number:
 		json.write("],")
 	else:
 		json.write(",")
 	number += 1
+	rangeX += 40
 number = 0
 
 json.write("\"edges\":[")
