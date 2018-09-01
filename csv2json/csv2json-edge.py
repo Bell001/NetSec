@@ -13,7 +13,7 @@ AS_Name = {'AS4652':'CAT-IX (Bangrak/ Nonthaburi)','AS45788':'BB Connect-IX (UIH
 	   'AS38081':'TIG-IX','AS37930':'TOT-IX','AS133543':'DTAC-IX','AS63529':'BKNIX (Bangkok Neutral Internet eXchange)','AS4651':'CAT-IIG','AS45430':'AWN-IIG (SBN)','AS45796':'BB Connect-IIG (UIH/ BEENET)','AS7568':'CSL-IIG (CS Loxinfo)','AS10089':'DTAC-IIG','AS45629':'JasTel-IIG','AS132876':'SYMC-IIG (Symphony)','AS58430':'TCCT-IIG','AS38082':'TIG-IIG (TRUE)','AS38040':'TOT-IIG','AS134509':'1-TO-ALL','AS45458':'AWN-ISP (SBN)','AS9931':'CAT-ISP','AS24187':'KIRZ','AS38566':'NTT (TH)','AS4765':'Pacific Internet','AS56309':'SiamData','AS23884':'PROEN Internet','AS24475':'ThaiREN','AS45758':'Triple T Internet','AS38794':'UIH(BeeNet)'}
 AS_Type = {}
 AS_Con = {}
-edge = []
+edge = {}
 
 def check_dict(a_dict,value):
 	try:
@@ -21,6 +21,25 @@ def check_dict(a_dict,value):
 	except KeyError:
 		a_dict[value] = 0
 	return a_dict
+
+def check_edge(a_dict, c1, c2, weight):
+        word = "["+c1+","+c2+"]"
+        reword = "["+c2+","+c1+"]"
+        try:
+		if ~have_dict(a_dict, word) and ~have_dict(a_dict, reword):
+                        a_dict[word] = weight
+        except KeyError:
+                a_dict[weight] = 0
+        return a_dict
+
+def  have_dict(a_dict, word):
+     flag = True
+     try:
+         a_dict[word] += 0
+     except KeyError:
+         flag = False 
+     return  flag
+
 file = sys.argv[1]
 name = sys.argv[2]
 temp = open(file)
@@ -34,8 +53,8 @@ for i in temp:
 		pass
 	word = "["+index[0]+","+index[1]+"]"
         reword =  "["+index[1]+","+index[0]+"]"
-        if ~(word in edge) and ~(reword in edge) and index[0].replace("\xef\xbb\xbf","") != "":
-	    edge.append(word)
+        if index[0].replace("\xef\xbb\xbf","") != "":
+            edge = check_edge(edge, index[0], index[1], weight)
 	    AS_Type[word] = index[3]
             AS_Con[word] = index[6]
 	    AP_IP = check_dict(AS_IP, index[0].replace("\xef\xbb\xbf","")) 
@@ -52,6 +71,7 @@ color = ["#"+''.join([random.choice('0123456789ABCDEF') for j in range(6)])
 json.write("{\"nodes\":[")
 
 number = 0
+
 print(len(AS_IP)) 
 for i in AS_IP:
         json.write("{\"color\":\""+color[number]+"\""+",\"label\":\""+str(AS_Name[i])+"\""+",\"attributes\":{},\"y\":"+str(rangeY)+",\"x\":"+str(rangeX)+",\"id\":"+"\""+str(i)+"\""+",\"size\":"+str(AS_IP[i]/36)+"}")
@@ -65,16 +85,17 @@ number = 0
 
 json.write("\"edges\":[")
 
-for i in edge:
-	temp = i.split(",")
-	c1 = temp[0].replace("[","")
-	c2 = temp[1].replace("]","")
-	json.write("{\"sourceID\":\""+c1+"\",\"attributes\":{},\"targetID\":\""+c2+"\",\"size\":1"+"}")
-	if len(edge)-1 == number:
+for key, value in edge.iteritems():
+	temp = key.split(",")
+        c1 = temp[0].replace("[","")
+        c2 = temp[1].replace("]","")
+        json.write("{\"sourceID\":\""+c1+"\",\"attributes\":{},\"targetID\":\""+c2+"\",\"size\":"+str(value)+"}")
+        if len(edge)-1 == number:
                 json.write("")
         else:
                 json.write(",")
-	number += 1
+        number += 1
+
 json.write("]}")
 json.close()
 
